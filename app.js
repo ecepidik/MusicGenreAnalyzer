@@ -230,6 +230,7 @@ app.post('/get-artist-genre', function(req, res) {
 
   request.get(options, function(error, response) {
     if (response.statusCode === 200){
+      console.log('Retrieved response from last fm');
       res.send(response.body);
     }
     else {
