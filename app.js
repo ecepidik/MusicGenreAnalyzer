@@ -184,7 +184,7 @@ function retrieve_user_top_track(access_token, callback) {
 }
 
 function retrieve_track_genres(track, artist, callback) {
-  var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=' + client_id_lastfm +'&'
+  var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getTopTags&api_key=' + client_id_lastfm +'&'
   + querystring.stringify({
     artist: artist.toLowerCase(),
     track: track.toLowerCase(),
@@ -199,7 +199,7 @@ function retrieve_track_genres(track, artist, callback) {
   var genres = [];
   return request.get(options, function(error, response) {
     if(!error && response.statusCode === 200) {
-      var track_data = response.body.track;
+      var track_data = response.body;
       genres = track_data.toptags.tag.map(genre => {
         return genre.name
       })
@@ -215,6 +215,27 @@ app.post('/get-genre', function(req, res) {
   retrieve_track_genres(track, artist, function(data){    
     res.send(data); 
   }); 
+})
+
+app.post('/get-artist-genre', function(req, res) {
+  var artist = req.body.artist;
+  var options = {
+    url: `http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&api_key=${client_id_lastfm}&`
+    + querystring.stringify({
+      artist: artist,
+      format: 'json'
+    }),
+    json: true
+  };
+
+  request.get(options, function(error, response) {
+    if (response.statusCode === 200){
+      res.send(response.body);
+    }
+    else {
+      res.send(error);
+    }
+  })
 })
 
 
